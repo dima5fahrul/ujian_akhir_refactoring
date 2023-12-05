@@ -38,51 +38,69 @@ class _DashboardSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const CommonSearch(),
-        const SizedBox(height: 10),
-        Image.asset(
-          "assets/images/banner.png",
-        ),
-        const SizedBox(height: 10),
-        CommonCategory(selected: controller.selected),
-        const SizedBox(height: 10),
-        CommonTitleAndSeeAll(
-          title: 'Top Company',
-          onTap: () => Get.toNamed(RouteName.list),
-        ),
-        const SizedBox(height: 10),
-        SizedBox(
-          height: 155,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
+    var textTheme = Theme.of(context).textTheme;
+
+    return Obx(
+      () => Column(
+        children: [
+          CommonSearch(
+            searchFieldController: controller.searchFieldController,
+            onChanged: (value) => controller.onKeywordChange(value),
+            onTap: () => controller
+                .onKeywordChange(controller.searchFieldController.text),
+          ),
+          const SizedBox(height: 10),
+          Image.asset(
+            "assets/images/banner.png",
+          ),
+          const SizedBox(height: 10),
+          CommonCategory(selected: controller.selected),
+          const SizedBox(height: 10),
+          CommonTitleAndSeeAll(
+            title: 'Top Company',
+            onTap: () => Get.toNamed(RouteName.list),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 155,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                CompanyModel item = controller.listItems[index];
+                return _BannerSection(item: item);
+              },
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
+              itemCount: controller.listItems.length,
+            ),
+          ),
+          CommonTitleAndSeeAll(
+            title: 'Recent Jobs',
+            onTap: () => Get.toNamed(RouteName.list),
+          ),
+          const SizedBox(height: 10),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            separatorBuilder: (context, index) => const Divider(),
+            itemCount: 3,
             itemBuilder: (context, index) {
-              final item = items[index];
-              return _BannerSection(item: item);
+              CompanyModel item = items[index];
+              return CommonJobListTile(
+                item: item,
+                textTheme: textTheme,
+              );
             },
-            separatorBuilder: (context, index) => const SizedBox(height: 10),
-            itemCount: items.length,
           ),
-        ),
-        CommonTitleAndSeeAll(
-          title: 'Recent Jobs',
-          onTap: () => Get.toNamed(RouteName.list),
-        ),
-        const SizedBox(height: 10),
-        const CommonJobList(itemCount: 3),
-        const SizedBox(height: 10),
-        TextButton(
-          onPressed: () => Get.toNamed(RouteName.list),
-          child: Text(
-            'View More',
-            style: Theme.of(context)
-                .textTheme
-                .labelMedium!
-                .copyWith(color: Colors.grey),
+          const SizedBox(height: 10),
+          TextButton(
+            onPressed: () => Get.toNamed(RouteName.list),
+            child: Text(
+              'View More',
+              style: textTheme.labelMedium!.copyWith(color: Colors.grey),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

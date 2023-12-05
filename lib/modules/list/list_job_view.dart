@@ -1,5 +1,4 @@
 import '../../config/config.dart';
-import '../../models/models.dart';
 import '../../shared/components/components.dart';
 import '../../shared/packages.dart';
 import 'list_job_controller.dart';
@@ -31,14 +30,33 @@ class ListJobView extends GetView<ListJobController> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              const CommonSearch(),
-              const SizedBox(height: 10),
-              CommonCategory(selected: controller.selected),
-              const SizedBox(height: 10),
-              CommonJobList(itemCount: items.length)
-            ],
+          child: Obx(
+            () => Column(
+              children: [
+                CommonSearch(
+                  searchFieldController: controller.searchFieldController,
+                  onChanged: (value) => controller.onKeywordChange(value),
+                  onTap: () => controller
+                      .onKeywordChange(controller.searchFieldController.text),
+                ),
+                const SizedBox(height: 10),
+                CommonCategory(selected: controller.selected),
+                const SizedBox(height: 10),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  separatorBuilder: (context, index) => const Divider(),
+                  itemCount: controller.listItems.length,
+                  itemBuilder: (context, index) {
+                    final jobItem = controller.listItems[index];
+                    return CommonJobListTile(
+                      item: jobItem,
+                      textTheme: textTheme,
+                    );
+                  },
+                )
+              ],
+            ),
           ),
         ),
       ),
